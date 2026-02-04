@@ -52,11 +52,9 @@ export enum AppTab {
   PROFILE = 'PROFILE'
 }
 
-// Global declaration for the iconify-icon web component.
-// Using 'declare global' ensures we augment the existing global JSX namespace.
-// This approach is more resilient than 'declare module "react"' when the module 
-// resolution context varies, avoiding "module not found" errors while still 
-// properly merging the 'iconify-icon' definition into IntrinsicElements.
+// Fix: Use 'declare global' to augment the IntrinsicElements interface.
+// This ensures that the 'iconify-icon' definition is merged with standard HTML elements
+// provided by React's type definitions, preventing errors when augmenting the 'react' module directly.
 declare global {
   namespace JSX {
     interface IntrinsicElements {

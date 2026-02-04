@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { AppTab, WOD, HistoryEntry } from './types';
 import WODView from './components/WODView';
@@ -50,6 +49,7 @@ const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   // Load and combine datasets
   useEffect(() => {
@@ -71,8 +71,10 @@ const App: React.FC = () => {
     fetchData();
   }, []);
 
-  // Extract unique years from data for the filter
-  // Fix: Explicitly ensure string type for localeCompare to avoid unknown type errors.
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
   const availableYears = useMemo(() => {
     const years = allWorkouts.map(w => String(w.date || '').split('-')[0]);
     return Array.from(new Set(years)).sort((a, b) => (b as string).localeCompare(a as string));
@@ -100,7 +102,6 @@ const App: React.FC = () => {
     };
   }, []);
 
-  // Filter logic: keywords + category + year
   const filteredWorkouts = useMemo(() => {
     return allWorkouts.filter(w => {
       const lowerSearch = searchTerm.toLowerCase().trim();
@@ -112,13 +113,12 @@ const App: React.FC = () => {
         (w.equipment && w.equipment.some((e: string) => e.toLowerCase().includes(lowerSearch)));
       
       const matchesCategory = !selectedCategory || w.type === selectedCategory;
-      const matchesYear = !selectedYear || w.date.startsWith(selectedYear);
+      const matchesYear = !selectedYear || (w.date && w.date.startsWith(selectedYear));
       
       return matchesSearch && matchesCategory && matchesYear;
     });
   }, [allWorkouts, searchTerm, selectedCategory, selectedYear]);
 
-  // Initial auto-selection
   useEffect(() => {
     if (!isLoading && allWorkouts.length > 0 && !currentWOD && !searchTerm && !selectedCategory && !selectedYear) {
       const randomIndex = Math.floor(Math.random() * allWorkouts.length);
@@ -150,54 +150,58 @@ const App: React.FC = () => {
   }, [currentWOD]);
 
   return (
-    <div className="app-container">
-      <div className="h-full flex flex-col">
-        <div className="flex-1 overflow-y-auto no-scrollbar">
-          {isLoading && (
-            <div className="h-full flex items-center justify-center">
-              <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          )}
-          
-          {!isLoading && activeTab === AppTab.WOD && (
-            <WODView 
-              wod={currentWOD} 
-              filteredResults={filteredWorkouts}
-              onStart={startWorkout} 
-              searchTerm={searchTerm} 
-              onSearchChange={setSearchTerm}
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              selectedYear={selectedYear}
-              onYearChange={setSelectedYear}
-              availableYears={availableYears}
-              onSelectWod={selectWod}
-              onShuffle={() => {
-                if (filteredWorkouts.length > 0) {
-                  const randomIndex = Math.floor(Math.random() * filteredWorkouts.length);
-                  setCurrentWOD(mapWodData(filteredWorkouts[randomIndex]));
-                }
-              }}
-            />
-          )}
-          
-          {activeTab === AppTab.TIMER && currentWOD && (
-            <TimerView wod={currentWOD} isActive={isWorkoutActive} onFinish={finishWorkout} />
-          )}
-          
-          {activeTab === AppTab.HISTORY && (
-            <HistoryView 
-              history={history} 
-              onGoToWod={() => setActiveTab(AppTab.WOD)} 
-            />
-          )}
-          
-          {activeTab === AppTab.PROFILE && (
-            <ProfileView />
-          )}
-        </div>
+    <div className={`${theme === 'dark' ? 'dark' : ''} h-full`}>
+      <div className="app-container">
+        <div className="h-full flex flex-col">
+          <div className="flex-1 overflow-y-auto no-scrollbar">
+            {isLoading && (
+              <div className="h-full flex items-center justify-center dark:bg-zinc-950">
+                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
+            
+            {!isLoading && activeTab === AppTab.WOD && (
+              <WODView 
+                wod={currentWOD} 
+                filteredResults={filteredWorkouts}
+                onStart={startWorkout} 
+                searchTerm={searchTerm} 
+                onSearchChange={setSearchTerm}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                selectedYear={selectedYear}
+                onYearChange={setSelectedYear}
+                availableYears={availableYears}
+                onSelectWod={selectWod}
+                onShuffle={() => {
+                  if (filteredWorkouts.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * filteredWorkouts.length);
+                    setCurrentWOD(mapWodData(filteredWorkouts[randomIndex]));
+                  }
+                }}
+                // Fix: Pass theme to WODView
+                theme={theme}
+              />
+            )}
+            
+            {activeTab === AppTab.TIMER && currentWOD && (
+              <TimerView wod={currentWOD} isActive={isWorkoutActive} onFinish={finishWorkout} />
+            )}
+            
+            {activeTab === AppTab.HISTORY && (
+              <HistoryView 
+                history={history} 
+                onGoToWod={() => setActiveTab(AppTab.WOD)} 
+              />
+            )}
+            
+            {activeTab === AppTab.PROFILE && (
+              <ProfileView theme={theme} onThemeToggle={toggleTheme} />
+            )}
+          </div>
 
-        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+          <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
       </div>
     </div>
   );
