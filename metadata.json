@@ -1,0 +1,7 @@
+{
+  "name": "CrossFit WOD & Timer",
+  "description": "A comprehensive CrossFit training app featuring daily workouts (WODs), a high-intensity interval timer, and workout history tracking with personal best indicators.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
