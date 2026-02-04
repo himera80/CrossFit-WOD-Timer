@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export enum WODType {
@@ -54,10 +53,11 @@ export enum AppTab {
 }
 
 // Global declaration for the iconify-icon web component.
-// To fix the "Property 'div' does not exist" error, we augment the existing 
-// React.JSX namespace via 'declare module "react"' to ensure seamless merging 
-// with standard React types instead of shadowing them with 'declare global'.
-declare module 'react' {
+// Using 'declare global' ensures we augment the existing global JSX namespace.
+// This approach is more resilient than 'declare module "react"' when the module 
+// resolution context varies, avoiding "module not found" errors while still 
+// properly merging the 'iconify-icon' definition into IntrinsicElements.
+declare global {
   namespace JSX {
     interface IntrinsicElements {
       'iconify-icon': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {

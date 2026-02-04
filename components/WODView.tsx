@@ -265,15 +265,15 @@ const WODView: React.FC<WODViewProps> = ({
         )}
       </main>
 
-      {/* FIXED START WORKOUT BUTTON (Restored Visual) */}
+      {/* RESTORED START WORKOUT BUTTON (Green with White Text) */}
       {wod && !modalWod && (
         <div className="absolute bottom-24 left-0 right-0 px-8 z-20">
           <button
             onClick={onStart}
-            className="w-full bg-[#58D289] text-white h-[68px] rounded-[24px] shadow-xl shadow-primary/30 flex items-center justify-center gap-3 active:scale-[0.97] transition-all transform hover:brightness-105"
+            className="w-full bg-primary text-white h-[68px] rounded-[24px] shadow-xl shadow-primary/30 flex items-center justify-center gap-3 active:scale-[0.97] transition-all transform hover:brightness-105"
           >
             <iconify-icon icon="solar:play-bold" class="text-2xl text-white"></iconify-icon>
-            <span className="text-[18px] font-black tracking-widest uppercase font-heading">Start Workout</span>
+            <span className="text-[18px] font-black tracking-widest uppercase font-heading">START WORKOUT</span>
           </button>
         </div>
       )}
@@ -281,7 +281,6 @@ const WODView: React.FC<WODViewProps> = ({
       {/* Premium 3D Detail Modal */}
       {modalWod && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-md [perspective:2000px]">
-          {/* Animated Glow Layers */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
              {[...Array(6)].map((_, i) => (
                 <div 
@@ -350,16 +349,16 @@ const WODView: React.FC<WODViewProps> = ({
                 )}
               </div>
 
+              {/* RESTORED MODAL BUTTON (Green with White Text) */}
               <button
                 onClick={() => { setModalWod(null); onStart(); }}
-                className="w-full bg-[#58D289] text-white h-[76px] rounded-[28px] mt-12 shadow-2xl flex items-center justify-center gap-4 active:scale-[0.96] transition-all font-black uppercase tracking-[0.2em] text-sm group"
+                className="w-full bg-primary text-white h-[76px] rounded-[28px] mt-12 shadow-2xl flex items-center justify-center gap-4 active:scale-[0.96] transition-all font-black uppercase tracking-[0.2em] text-sm group"
               >
-                Start Workout
+                START WORKOUT
                 <iconify-icon icon="solar:arrow-right-bold" class="text-xl text-white group-hover:translate-x-1 transition-transform"></iconify-icon>
               </button>
             </div>
           </div>
-          {/* Backdrop closer */}
           <div className="absolute inset-0 -z-10" onClick={() => setModalWod(null)}></div>
         </div>
       )}
